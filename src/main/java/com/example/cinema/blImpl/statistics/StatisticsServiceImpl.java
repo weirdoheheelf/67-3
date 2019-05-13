@@ -1,17 +1,19 @@
 package com.example.cinema.blImpl.statistics;
 
+import com.example.cinema.bl.management.HallService;
+import com.example.cinema.bl.sales.TicketService;
 import com.example.cinema.bl.statistics.StatisticsService;
+import com.example.cinema.blImpl.management.hall.HallServiceForBl;
+import com.example.cinema.data.management.HallMapper;
+import com.example.cinema.data.management.ScheduleMapper;
+import com.example.cinema.data.sales.TicketMapper;
 import com.example.cinema.data.statistics.StatisticsMapper;
-import com.example.cinema.po.AudiencePrice;
-import com.example.cinema.po.MovieScheduleTime;
-import com.example.cinema.po.MovieTotalBoxOffice;
-import com.example.cinema.vo.AudiencePriceVO;
-import com.example.cinema.vo.MovieScheduleTimeVO;
-import com.example.cinema.vo.MovieTotalBoxOfficeVO;
-import com.example.cinema.vo.ResponseVO;
+import com.example.cinema.po.*;
+import com.example.cinema.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,6 +28,12 @@ import java.util.List;
 public class StatisticsServiceImpl implements StatisticsService {
     @Autowired
     private StatisticsMapper statisticsMapper;
+    @Autowired
+    private ScheduleMapper scheduleMapper;
+    @Autowired
+    private HallServiceForBl hallService;
+    @Autowired
+    private TicketMapper ticketMapper;
     @Override
     public ResponseVO getScheduleRateByDate(Date date) {
         try{
@@ -80,8 +88,35 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     public ResponseVO getMoviePlacingRateByDate(Date date) {
-        //要求见接口说明
-        return null;
+        try {
+            List<PlacingRateVO> placingRateVOList=new ArrayList<>();
+            List<MovieScheduleTime> movieScheduleTimeList=statisticsMapper.selectMovieScheduleTimes(date,getNumDayAfterDate(date,1));
+            int seatNum=0;
+            int AudienceNum=0;
+            for(MovieScheduleTime movieScheduleTime:movieScheduleTimeList){
+                int scheduleTime=movieScheduleTime.getTime();
+                List<ScheduleItem> scheduleItemList=scheduleMapper.selectScheduleByMovieId(movieScheduleTime.getMovieId());
+                for (ScheduleItem scheduleItem:scheduleItemList){
+                    Hall hall=hallService.getHallById(scheduleItem.getHallId());
+                    int row=hall.getRow();
+                    int column=hall.getColumn();
+                    seatNum=seatNum+row*column;
+                    List<Ticket> tickets=ticketMapper.selectTicketsBySchedule(scheduleItem.getId());
+                    AudienceNum=AudienceNum+tickets.size();
+                }
+                double placingRate=(double)((AudienceNum/scheduleTime)/seatNum)*100;
+                String result=placingRate+"%";
+                PlacingRateVO placingRateVO=new PlacingRateVO();
+                placingRateVO.setName(movieScheduleTime.getName());
+                placingRateVO.setDate(date);
+                placingRateVO.setPlacingRateByDate(result);
+                placingRateVOList.add(placingRateVO);
+            }
+            return ResponseVO.buildSuccess(placingRateVOList);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseVO.buildFailure("失败");
+        }
     }
 
     @Override
@@ -103,8 +138,6 @@ public class StatisticsServiceImpl implements StatisticsService {
         calendarTime.add(Calendar.DAY_OF_YEAR, num);
         return calendarTime.getTime();
     }
-
-
 
     private List<MovieScheduleTimeVO> movieScheduleTimeList2MovieScheduleTimeVOList(List<MovieScheduleTime> movieScheduleTimeList){
         List<MovieScheduleTimeVO> movieScheduleTimeVOList = new ArrayList<>();

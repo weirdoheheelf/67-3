@@ -1,6 +1,5 @@
 $(document).ready(function() {
 
-
     getScheduleRate();
     
     getBoxOffice();
@@ -151,9 +150,81 @@ $(document).ready(function() {
 
     function getPlacingRate() {
         // todo
+        var placeRateDate=formatDate(new Date());
+        $('#place-rate-date-input').val(placeRateDate);
+        $('#place-rate-date-input').change(function () {
+            placeRateDate = $('#place-rate-date-input').val();
+        });
+
+        getRequest(
+            'statistics/PlacingRate?date='+placeRateDate,
+            function (res) {
+                var data = res.content || [];
+                var tableData=data.map(function (item) {
+                    return  item.placingRateByDate;
+                });
+                var nameList=data.map(function (item) {
+                    return item.name;
+                });
+                var option={
+                    title:{
+                        text:'上座率',
+                        x:'center'
+                    },
+                    xAxis:{
+                        type:'catagory',
+                        data:nameList
+                    },
+                    yAxis:{
+                        type:'value'
+                    },
+                    series:[{
+                        data:tableData,
+                        type:'line'
+                    }]
+                };
+                var placecRateChart=echarts.init($("#place-rate-container")[0]);
+                placecRateChart.setOption(option);
+            },
+            function (error) {
+                alert(JSON.stringify(error));
+            });
     }
 
     function getPolularMovie() {
         // todo
+        getRequest(
+            'statistics/popular/movie',
+            function (res) {
+                var data=res.content || [];
+                var tableData=data.map(function (item) {
+                    return item.rank;
+                });
+                var nameList=data.map(function (item) {
+                    return item.name;
+                });
+                var option={
+                    title:{
+                        text:'受欢迎电影排行榜',
+                        x:'center'
+                    },
+                    xAxis:{
+                        type:'value'
+                    },
+                    yAxis:{
+                        type:'catagory',
+                        data:nameList
+                    },
+                    series:[{
+                        type:'bar',
+                        data:tableData
+                    }]
+                };
+                var popularMovieChart=echarts.init($("#popular-movie-container")[0]);
+                popularMovieChart.setOption(option);
+            },
+            function (error) {
+                alert(JSON.stringify(error));
+            });
     }
 });

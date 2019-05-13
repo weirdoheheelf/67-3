@@ -100,7 +100,24 @@ $(document).ready(function(){
        alert('交给你们啦，修改时需要在对应html文件添加表单然后获取用户输入，提交给后端，别忘记对用户输入进行验证。（可参照添加电影&添加排片&修改排片）');
     });
     $("#delete-btn").click(function () {
-        alert('交给你们啦，下架别忘记需要一个确认提示框，也别忘记下架之后要对用户有所提示哦');
+        var r=confirm("确认要下架该电影吗")
+        if(r){
+            deleteRequest(
+                '/movie/off/batch',
+                {movieIdList:[Number($('#')[0].dataset.movieId)]},
+                function (res) {
+                    if (res.success){
+                        getMovie();
+                    }else {
+                        alert(res.message);
+                    }
+                },
+                function (error) {
+                    alert(JSON.stringify(error));
+                }
+
+            );
+        }
     });
 
 });

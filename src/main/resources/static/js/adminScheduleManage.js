@@ -132,6 +132,9 @@ $(document).ready(function() {
             fare: $("#schedule-price-input").val()
         };
         //todo 需要做一下表单验证？
+        if(!validateScheduleForm(form)){
+            return;
+        }
 
         postRequest(
             '/schedule/add',
@@ -150,6 +153,33 @@ $(document).ready(function() {
         );
     });
 
+    function validateScheduleForm(data){
+        var isValidate = true;
+        if(!data.startTime) {
+            isValidate=false;
+            alert("开始时间不能为空");
+            $('#schedule-start-date-input').parent('.form-group').addClass('has-error');
+        }
+        if (!data.endTime){
+            isValidate=false;
+            alert("结束时间不能为空");
+            $('#schedule-end-date-input').parent('.form-group').addClass('has-error');
+        }
+        var regPos=/^[0-9]+$/;
+        if(!data.fare){
+            isValidate=false;
+            alert("票价不能为空");
+            $('#schedule-price-input').parent('.form-group').addClass('has-error');
+        }else {
+            if(!regPos.test(data.fare)){
+                isValidate = false;
+                alert("票价必须为大于0的数字");
+                $('#schedule-price-input').parent('.form-group').addClass('has-error');
+            }
+        }
+        return isValidate;
+    }
+
     $('#schedule-edit-form-btn').click(function () {
         var form = {
             id: Number($('#scheduleEditModal')[0].dataset.scheduleId),
@@ -160,6 +190,9 @@ $(document).ready(function() {
             fare: $("#schedule-edit-price-input").val()
         };
         //todo 需要做一下表单验证？
+        if(!validateScheduleEditForm(form)){
+            return;
+        }
 
         postRequest(
             '/schedule/update',
@@ -177,6 +210,32 @@ $(document).ready(function() {
             }
         );
     });
+    function validateScheduleEditForm(data){
+        var isValidate = true;
+        if(!data.startTime) {
+            isValidate=false;
+            alert("开始时间不能为空");
+            $('#schedule-edit-start-date-input').parent('.form-group').addClass('has-error');
+        }
+        if (!data.endTime){
+            isValidate=false;
+            alert("结束时间不能为空");
+            $('#schedule-edit-end-date-input').parent('.form-group').addClass('has-error');
+        }
+        var regPos=/^[0-9]+$/;
+        if(!data.fare){
+            isValidate=false;
+            alert("票价不能为空");
+            $('#schedule-edit-price-input').parent('.form-group').addClass('has-error');
+        }else {
+            if(!regPos.test(data.fare)){
+                isValidate = false;
+                alert("票价必须为大于0的数字");
+                $('#schedule-edit-price-input').parent('.form-group').addClass('has-error');
+            }
+        }
+        return isValidate;
+    }
 
     $("#schedule-edit-remove-btn").click(function () {
         var r=confirm("确认要删除该排片信息吗")
