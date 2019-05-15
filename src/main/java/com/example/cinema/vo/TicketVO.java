@@ -1,5 +1,7 @@
 package com.example.cinema.vo;
 
+import com.example.cinema.po.Ticket;
+
 import java.sql.Timestamp;
 
 /**

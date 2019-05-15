@@ -96,15 +96,53 @@ $(document).ready(function(){
     });
 
     // admin界面才有
-    $("#modify-btn").click(function () {
-       alert('交给你们啦，修改时需要在对应html文件添加表单然后获取用户输入，提交给后端，别忘记对用户输入进行验证。（可参照添加电影&添加排片&修改排片）');
+    $("#movie-edit-form-btn").click(function (){
+        getSyncRequest(
+            '/movie/'+movieId + '/' + userId,
+            function(res){
+                var movie = res.content;
+                $('#movie-name-input').val(movie.name);
+                $('#movie-date-input').val(movie.startDate.slice(0,10));
+                $('#movie-img-input').val(movie.posterUrl);
+                $('#movie-description-input').val(movie.description);
+                $('#movie-type-input').val(movie.type);
+                $('#movie-length-input').val(movie.length);
+                $('#movie-country-input').val(movie.country);
+                $('#movie-language-input').val(movie.language);
+                $('#movie-director-input').val(movie.director);
+                $('#movie-star-input').val(movie.starring);
+                $('#movie-writer-input').val(movie.screenWriter);
+                console.log(movie);
+            },
+            function (error) {
+                alert(error);
+            }
+        );
+    });
+
+
+    $("#movie-form-btn").click(function () {
+        var formData = getMovieForm();
+        if(!validateMovieForm(formData)) {
+            return;
+        }
+        postRequest(
+            '/movie/update',
+            formData,
+            function (res) {
+                repaintMovieDetail(formData);
+                $("#movieEditModal").modal('hide');
+            },
+            function (error) {
+                alert(error);
+            });
     });
     $("#delete-btn").click(function () {
         var r=confirm("确认要下架该电影吗")
         if(r){
             deleteRequest(
                 '/movie/off/batch',
-                {movieIdList:[Number($('#')[0].dataset.movieId)]},
+                {movieIdList:[movieId]},
                 function (res) {
                     if (res.success){
                         getMovie();
@@ -119,5 +157,38 @@ $(document).ready(function(){
             );
         }
     });
+
+    function getMovieForm() {
+        return {
+            name: $('#movie-name-input').val(),
+            startDate: $('#movie-date-input').val(),
+            posterUrl: $('#movie-img-input').val(),
+            description: $('#movie-description-input').val(),
+            type: $('#movie-type-input').val(),
+            length: $('#movie-length-input').val(),
+            country: $('#movie-country-input').val(),
+            starring: $('#movie-star-input').val(),
+            director: $('#movie-director-input').val(),
+            screenWriter: $('#movie-writer-input').val(),
+            language: $('#movie-language-input').val()
+        };
+    }
+
+    function validateMovieForm(data) {
+        var isValidate = true;
+        if(!data.name) {
+            isValidate = false;
+            $('#movie-name-input').parent('.form-group').addClass('has-error');
+        }
+        if(!data.posterUrl) {
+            isValidate = false;
+            $('#movie-img-input').parent('.form-group').addClass('has-error');
+        }
+        if(!data.startDate) {
+            isValidate = false;
+            $('#movie-date-input').parent('.form-group').addClass('has-error');
+        }
+        return isValidate;
+    }
 
 });

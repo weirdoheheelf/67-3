@@ -111,4 +111,11 @@ public interface ScheduleMapper {
      */
     List<ScheduleItem> selectScheduleByMovieId(@Param("movieId") int movieId);
 
+    /**
+     * 查询movieId的在日期内的所有排片信息
+     * @param movieId
+     * @param date
+     * @return
+     */
+    List<ScheduleItem> selectScheduleByMovieIdAndDate(@Param("movieId") int movieId,@Param("date") Date date, @Param("nextDate") Date nextDate);
 }

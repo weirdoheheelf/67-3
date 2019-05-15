@@ -1,5 +1,13 @@
 $(document).ready(function() {
 
+    var placeRateDate=formatDate(new Date());
+    $('#place-rate-date-input').val(placeRateDate);
+
+    $('#place-rate-date-input').change(function () {
+        placeRateDate = $('#place-rate-date-input').val();
+        getPlacingRate();
+    });
+
     getScheduleRate();
     
     getBoxOffice();
@@ -150,18 +158,13 @@ $(document).ready(function() {
 
     function getPlacingRate() {
         // todo
-        var placeRateDate=formatDate(new Date());
-        $('#place-rate-date-input').val(placeRateDate);
-        $('#place-rate-date-input').change(function () {
-            placeRateDate = $('#place-rate-date-input').val();
-        });
 
         getRequest(
-            'statistics/PlacingRate?date='+placeRateDate,
+            '/statistics/PlacingRate?date='+placeRateDate.replace(/-/g,'/'),
             function (res) {
                 var data = res.content || [];
                 var tableData=data.map(function (item) {
-                    return  item.placingRateByDate;
+                    return  item.placingRate;
                 });
                 var nameList=data.map(function (item) {
                     return item.name;
@@ -172,7 +175,7 @@ $(document).ready(function() {
                         x:'center'
                     },
                     xAxis:{
-                        type:'catagory',
+                        type:'category',
                         data:nameList
                     },
                     yAxis:{
@@ -180,7 +183,7 @@ $(document).ready(function() {
                     },
                     series:[{
                         data:tableData,
-                        type:'line'
+                        type:'bar'
                     }]
                 };
                 var placecRateChart=echarts.init($("#place-rate-container")[0]);
@@ -194,7 +197,7 @@ $(document).ready(function() {
     function getPolularMovie() {
         // todo
         getRequest(
-            'statistics/popular/movie',
+            '/statistics/popular/movie?days=30&movieNum=3',
             function (res) {
                 var data=res.content || [];
                 var tableData=data.map(function (item) {
@@ -212,7 +215,7 @@ $(document).ready(function() {
                         type:'value'
                     },
                     yAxis:{
-                        type:'catagory',
+                        type:'category',
                         data:nameList
                     },
                     series:[{

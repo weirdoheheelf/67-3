@@ -99,19 +99,41 @@ function seatClick(id, i, j) {
 }
 
 function orderConfirmClick() {
+
+    seat=selectedSeats.map(function (value, index) {
+        return {"columnIndex":value[1],"rowIndex":value[0]};
+    });
+    var ticketForm={
+        userId:sessionStorage.getItem('id'),
+        scheduleId:scheduleId,
+        seats:seat
+    };
+
     $('#seat-state').css("display", "none");
     $('#order-state').css("display", "");
 
     // TODO:这里是假数据，需要连接后端获取真数据，数据格式可以自行修改，但如果改了格式，别忘了修改renderOrder方法
-    var orderInfo = {
+
+    postRequest(
+        '/ticket/lockSeat',
+        ticketForm,
+        function (res) {
+            renderOrder(res.content);
+        },
+        function (error) {
+            alert(error);
+        });
+
+    /*var orderInfo = {
         "ticketVOList": [{
             "id": 63,
             "userId": 15,
             "scheduleId": 67,
             "columnIndex": 5,
             "rowIndex": 1,
-            "state": "未完成"
-        }, {"id": 64, "userId": 15, "scheduleId": 67, "columnIndex": 6, "rowIndex": 1, "state": "未完成"}],
+            "state": "未完成",
+            "time":"2019-05-15T21:56:48.241+0800"
+        }],
         "total": 41.0,
         "coupons": [{
             "id": 5,
@@ -164,7 +186,7 @@ function orderConfirmClick() {
             }
         }]
     };
-    renderOrder(orderInfo);
+    renderOrder(orderInfo);*/
 
     getRequest(
         '/vip/' + sessionStorage.getItem('id') + '/get',

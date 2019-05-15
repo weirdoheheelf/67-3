@@ -1,6 +1,6 @@
-package com.example.cinema.vo;
+package com.example.cinema.po;
 
-public class PlacingRateVO {
+public class PlacingRate {
     /**
      * 电影id
      */
@@ -13,9 +13,6 @@ public class PlacingRateVO {
      * 电影名字
      */
     private String name;
-
-    public PlacingRateVO(){
-    }
 
     public Integer getId(){ return movieId;}
 

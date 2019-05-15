@@ -88,6 +88,15 @@
             order by end_time asc
     </select>
 
+    <select id="selectScheduleByMovieIdAndDate" resultMap="ScheduleItem">
+        select * from
+          (select * from schedule where movie_id = #{movieId} and start_time between #{date} and #{nextDate}) s,
+          (select name as movie_name, id as movie_id from movie) m,
+          (select name as hall_name, id as hall_id from hall) h
+        where s.movie_id = m.movie_id and s.hall_id = h.hall_id
+        order by end_time asc
+    </select>
+
     <resultMap id="ScheduleItem" type="com.example.cinema.po.ScheduleItem">
         <id column="id" property="id"></id>
         <result column="hall_id" property="hallId"></result>

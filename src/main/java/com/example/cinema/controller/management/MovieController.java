@@ -66,7 +66,7 @@ public class MovieController {
         return movieService.getMovieByKeyword(keyword);
     }
 
-    @RequestMapping(value = "/movie/off/batch",method = RequestMethod.POST)
+    @RequestMapping(value = "/movie/off/batch",method = RequestMethod.DELETE)
     public ResponseVO pullOfBatchOfMovie(@RequestBody MovieBatchOffForm movieBatchOffForm){
         return movieService.pullOfBatchOfMovie(movieBatchOffForm);
     }

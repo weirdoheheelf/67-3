@@ -1,10 +1,7 @@
 package com.example.cinema.blImpl.statistics;
 
-import com.example.cinema.bl.management.HallService;
-import com.example.cinema.bl.sales.TicketService;
 import com.example.cinema.bl.statistics.StatisticsService;
 import com.example.cinema.blImpl.management.hall.HallServiceForBl;
-import com.example.cinema.data.management.HallMapper;
 import com.example.cinema.data.management.ScheduleMapper;
 import com.example.cinema.data.sales.TicketMapper;
 import com.example.cinema.data.statistics.StatisticsMapper;
@@ -13,7 +10,6 @@ import com.example.cinema.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,9 +27,10 @@ public class StatisticsServiceImpl implements StatisticsService {
     @Autowired
     private ScheduleMapper scheduleMapper;
     @Autowired
-    private HallServiceForBl hallService;
+    private HallServiceForBl hallServiceForBl;
     @Autowired
     private TicketMapper ticketMapper;
+
     @Override
     public ResponseVO getScheduleRateByDate(Date date) {
         try{
@@ -91,25 +88,29 @@ public class StatisticsServiceImpl implements StatisticsService {
         try {
             List<PlacingRateVO> placingRateVOList=new ArrayList<>();
             List<MovieScheduleTime> movieScheduleTimeList=statisticsMapper.selectMovieScheduleTimes(date,getNumDayAfterDate(date,1));
-            int seatNum=0;
-            int AudienceNum=0;
             for(MovieScheduleTime movieScheduleTime:movieScheduleTimeList){
+                double seatNum=0;
+                double AudienceNum=0;
                 int scheduleTime=movieScheduleTime.getTime();
-                List<ScheduleItem> scheduleItemList=scheduleMapper.selectScheduleByMovieId(movieScheduleTime.getMovieId());
+                List<ScheduleItem> scheduleItemList=scheduleMapper.selectScheduleByMovieIdAndDate(movieScheduleTime.getMovieId(),date,getNumDayAfterDate(date,1));
                 for (ScheduleItem scheduleItem:scheduleItemList){
-                    Hall hall=hallService.getHallById(scheduleItem.getHallId());
+                    Hall hall=hallServiceForBl.getHallById(scheduleItem.getHallId());
                     int row=hall.getRow();
                     int column=hall.getColumn();
                     seatNum=seatNum+row*column;
                     List<Ticket> tickets=ticketMapper.selectTicketsBySchedule(scheduleItem.getId());
-                    AudienceNum=AudienceNum+tickets.size();
+                    for (Ticket ticket:tickets){
+                        if (ticket.getState()==1){
+                            AudienceNum++;
+                        }
+                    }
                 }
-                double placingRate=(double)((AudienceNum/scheduleTime)/seatNum)*100;
-                String result=placingRate+"%";
+                double placingRate=0;
+                placingRate=AudienceNum/scheduleTime/seatNum;
                 PlacingRateVO placingRateVO=new PlacingRateVO();
+                placingRateVO.setId(movieScheduleTime.getMovieId());
                 placingRateVO.setName(movieScheduleTime.getName());
-                placingRateVO.setDate(date);
-                placingRateVO.setPlacingRateByDate(result);
+                placingRateVO.setPlacingRate(placingRate);
                 placingRateVOList.add(placingRateVO);
             }
             return ResponseVO.buildSuccess(placingRateVOList);
@@ -155,4 +156,5 @@ public class StatisticsServiceImpl implements StatisticsService {
         }
         return movieTotalBoxOfficeVOList;
     }
+
 }
