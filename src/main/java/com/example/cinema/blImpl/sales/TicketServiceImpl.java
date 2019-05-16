@@ -75,38 +75,11 @@ public class TicketServiceImpl implements TicketService {
             }
             //选择最优优惠方案
             List<Coupon> couponList= couponServiceForBl.getCouponListByUserId(ticketForm.getUserId());
-            /*Coupon bestCoupon=null;
-            double finalPrice=totalPrice;
-            if (couponList!=null) {
-                for (Coupon coupon : couponList) {
-                    double targetAmount = coupon.getTargetAmount();
-                    Timestamp couponStartTime = coupon.getStartTime();
-                    Timestamp couponEndTime = coupon.getEndTime();
-                    Timestamp ticketTime = new Timestamp(System.currentTimeMillis());
-                    if (totalPrice >= targetAmount && ticketTime.after(couponStartTime) && ticketTime.before(couponEndTime) && bestCoupon != null && coupon.getDiscountAmount() > bestCoupon.getDiscountAmount()) {
-                        bestCoupon = coupon;
-                    } else if (bestCoupon == null) {
-                        bestCoupon = coupon;
-                    }
-                }
-                if (bestCoupon!=null) {
-                    finalPrice = totalPrice - bestCoupon.getDiscountAmount();
-                }
-            }
-
-            //创建TicketWithCouponVO
-            //1
-            TicketWithCouponVO ticketWithCouponVO=new TicketWithCouponVO();
-            ticketWithCouponVO.setActivities(activityServiceForBl.getActivitiesByMovie(ticketList.get(0).getId()));
-            //2
-            List<Coupon> temp=new ArrayList<>();
-            temp.add(bestCoupon);
-            ticketWithCouponVO.setCoupons(couponList);*/
-            //3
             if (couponList==null){
                 Coupon coupon=new Coupon();
                 coupon.setDiscountAmount(0);
                 coupon.setTargetAmount(0);
+                coupon.setId(0);
             }
             TicketWithCouponVO ticketWithCouponVO=new TicketWithCouponVO();
             ticketWithCouponVO.setCoupons(couponList);
@@ -138,7 +111,7 @@ public class TicketServiceImpl implements TicketService {
                 ticketMapper.cleanExpiredTicket();
                 userId=ticket.getUserId();
                 if (ticket.getState()==0){
-                    ticket.setState(1);
+                    ticketMapper.updateTicketState(a,1);
                 }
                 else if (ticket.getState()==2){
                     return ResponseVO.buildFailure("失败");
@@ -149,7 +122,9 @@ public class TicketServiceImpl implements TicketService {
                 ScheduleItem scheduleItem=ticketWithScheduleVO.getSchedule();
                 movieId=scheduleItem.getMovieId();
             }
-            couponServiceForBl.deleteCouponUser(couponId,userId);
+            if (couponId!=0) {
+                couponServiceForBl.deleteCouponUser(couponId, userId);
+            }
             List<Activity> activities=activityServiceForBl.getActivitiesByMovie(movieId);
             if (activities!=null) {
                 for (Activity activity : activities) {
@@ -221,7 +196,4 @@ public class TicketServiceImpl implements TicketService {
             return ResponseVO.buildFailure("失败");
         }
     }
-
-
-
 }
