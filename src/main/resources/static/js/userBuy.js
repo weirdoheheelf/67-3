@@ -14,17 +14,9 @@ $(document).ready(function () {
 
     // TODO:填空
     function renderTicketList(list) {
-        $('.ticket-on-list').empty();
-        var ticketDomStr =
-            "<table class='table table-striped table-bordered'>"+
-            "<thead>"+ "<tr>"+ "<th>电影名称</th>" +"<th>影厅名</th>"+
-            "<th>座位</th>"+
-            "<th>放映时间</th>"+
-            "<th>预计结束时间</th>"+
-            "<th>状态</th>"+
-            "</tr>"+ "</thead>";
+        var ticketDomStr = '';
         list.forEach(function (ticket) {
-            ticketDomStr +=
+            /*ticketDomStr +=
                 "<tbody>"+
                 "<tr>"+
                 "<td>"+
@@ -42,9 +34,16 @@ $(document).ready(function () {
                 "<td>"+"<b id='ticket-state'></b>"+ticket.state+"</td>"+
                 "</tr>"+
                 "</tbody>"
+        });*/
+            ticketDomStr += "<tr>" +
+                "<td>" + ticket.schedule.movieName + "</td>" +
+                "<td>" + ticket.schedule.hallName + "</td>" +
+                "<td>" + ticket.rowIndex + "排" + ticket.columnIndex + "座" + "</td>" +
+                "<td>" + ticket.schedule.startTime.toString().substring(11, 19) + "</td>" +
+                "<td>" + ticket.schedule.endTime.toLocaleString().substring(11, 19) + "</td>" +
+                "<td>" + ticket.state + "</td>" +
+                "</tr>"
         });
-        ticketDomStr=ticketDomStr+"</table>"
-        $('.ticket-on-list').append(ticketDomStr);
+        $('.table tbody').append(ticketDomStr);
     }
-
 });
