@@ -2,11 +2,22 @@ $(document).ready(function() {
 
     var placeRateDate=formatDate(new Date());
     $('#place-rate-date-input').val(placeRateDate);
-
     $('#place-rate-date-input').change(function () {
         placeRateDate = $('#place-rate-date-input').val();
         getPlacingRate();
     });
+
+    var populayMovieDay=30;
+    var popularMovieNum=5;
+    $('#popular-movie-day-input').change(function () {
+        populayMovieDay=$('#popular-movie-day-input').val();
+        getPolularMovie();
+    });
+    $('#popular-movie-number-input').change(function () {
+        popularMovieNum=$('#popular-movie-number-input').val();
+        getPolularMovie();
+    })
+
 
     getScheduleRate();
     
@@ -197,11 +208,11 @@ $(document).ready(function() {
     function getPolularMovie() {
         // todo
         getRequest(
-            '/statistics/popular/movie?days=30&movieNum=3',
+            '/statistics/popular/movie?days='+populayMovieDay+'&movieNum='+popularMovieNum,
             function (res) {
                 var data=res.content || [];
                 var tableData=data.map(function (item) {
-                    return item.rank;
+                    return item.boxOffice;
                 });
                 var nameList=data.map(function (item) {
                     return item.name;
@@ -211,10 +222,10 @@ $(document).ready(function() {
                         text:'受欢迎电影排行榜',
                         x:'center'
                     },
-                    xAxis:{
+                    yAxis:{
                         type:'value'
                     },
-                    yAxis:{
+                    xAxis:{
                         type:'category',
                         data:nameList
                     },

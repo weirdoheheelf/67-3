@@ -1,6 +1,7 @@
 package com.example.cinema.blImpl.promotion;
 
 import com.example.cinema.bl.promotion.VIPService;
+import com.example.cinema.blImpl.sales.VIPServiceForBl;
 import com.example.cinema.data.promotion.VIPCardMapper;
 import com.example.cinema.vo.VIPCardForm;
 import com.example.cinema.po.VIPCard;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
  * Created by liying on 2019/4/14.
  */
 @Service
-public class VIPServiceImpl implements VIPService {
+public class VIPServiceImpl implements VIPService, VIPServiceForBl {
     @Autowired
     VIPCardMapper vipCardMapper;
 
@@ -79,6 +80,17 @@ public class VIPServiceImpl implements VIPService {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseVO.buildFailure("失败");
+        }
+    }
+
+    @Override
+    public VIPCard getVIPCardByUserId(int userId){
+        try {
+            VIPCard vipCard = vipCardMapper.selectCardByUserId(userId);
+            return vipCard;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

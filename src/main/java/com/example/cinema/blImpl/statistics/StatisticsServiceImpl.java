@@ -122,8 +122,28 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     public ResponseVO getPopularMovies(int days, int movieNum) {
-        //要求见接口说明
-        return null;
+        try {
+            //获取一个最近days内所有电影的总票房List<MovieBoxOfficeVO>（VO包括movieId,boxOffice,name?）
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date today = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
+            Date startDate = getNumDayAfterDate(today, 1 - days);
+            List<MovieBoxOffice>  movieBoxOfficeList =statisticsMapper.selectMovieBoxOfficeByDates(startDate,today);
+            List<MovieBoxOfficeVO> movieBoxOfficeVOList=new ArrayList<>();
+            int times=0;
+            for(MovieBoxOffice m : movieBoxOfficeList){
+                if(times<movieNum){
+                    times++;
+                    movieBoxOfficeVOList.add(m.toVO());
+                }
+                else{
+                    break;
+                }
+            }
+            return ResponseVO.buildSuccess(movieBoxOfficeVOList);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseVO.buildFailure("失败");
+        }
     }
 
 

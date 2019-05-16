@@ -1,16 +1,9 @@
-package com.example.cinema.po;
+package com.example.cinema.vo;
 
-
-import com.example.cinema.vo.VIPCardVO;
 
 import java.sql.Timestamp;
 
-/**
- * Created by liying on 2019/4/14.
- */
-
-public class VIPCard {
-
+public class VIPCardVO {
     public static final double price = 25;
 
     public static final String description="满200送30";
@@ -36,17 +29,7 @@ public class VIPCard {
     private Timestamp joinDate;
 
 
-    public VIPCard() {
-
-    }
-
-    public VIPCardVO toVO(){
-        VIPCardVO vipCardVO=new VIPCardVO();
-        vipCardVO.setBalance(this.balance);
-        vipCardVO.setId(this.id);
-        vipCardVO.setJoinDate(this.joinDate);
-        vipCardVO.setUserId(this.userId);
-        return vipCardVO;
+    public VIPCardVO() {
 
     }
 
