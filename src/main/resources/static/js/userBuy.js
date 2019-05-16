@@ -38,7 +38,7 @@ $(document).ready(function () {
             ticketDomStr += "<tr>" +
                 "<td>" + ticket.schedule.movieName + "</td>" +
                 "<td>" + ticket.schedule.hallName + "</td>" +
-                "<td>" + ticket.rowIndex + "排" + ticket.columnIndex + "座" + "</td>" +
+                "<td>" + (ticket.rowIndex+1) + "排" + (ticket.columnIndex+1) + "座" + "</td>" +
                 "<td>" + ticket.schedule.startTime.toString().substring(11, 19) + "</td>" +
                 "<td>" + ticket.schedule.endTime.toLocaleString().substring(11, 19) + "</td>" +
                 "<td>" + ticket.state + "</td>" +
