@@ -165,7 +165,7 @@ $(document).ready(function() {
             alert("结束时间不能为空");
             $('#schedule-end-date-input').parent('.form-group').addClass('has-error');
         }
-        var regPos=/^[0-9]+$/;
+        var regPos=/^[0-9]+.?[0-9]*$/;
         if(!data.fare){
             isValidate=false;
             alert("票价不能为空");
@@ -222,7 +222,7 @@ $(document).ready(function() {
             alert("结束时间不能为空");
             $('#schedule-edit-end-date-input').parent('.form-group').addClass('has-error');
         }
-        var regPos=/^[0-9]+$/;
+        var regPos=/^[0-9]+.?[0-9]*$/;
         if(!data.fare){
             isValidate=false;
             alert("票价不能为空");
