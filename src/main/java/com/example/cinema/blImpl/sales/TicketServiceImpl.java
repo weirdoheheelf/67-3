@@ -184,7 +184,9 @@ public class TicketServiceImpl implements TicketService {
                 temp.setRowIndex(ticketVO.getRowIndex());
                 temp.setState(ticketVO.getState());
                 temp.setTime(ticketVO.getTime());
-                listTicketWithScheduleVO.add(temp);
+                if(!temp.getState().equals("未完成")) {
+                    listTicketWithScheduleVO.add(temp);
+                }
             }
             return ResponseVO.buildSuccess(listTicketWithScheduleVO);
         } catch (Exception e) {
@@ -254,6 +256,9 @@ public class TicketServiceImpl implements TicketService {
                 ticketPrice = ticketPrice * id.size();
                 newBalance = vipCard.getBalance() - (ticketPrice - discount);
                 if (newBalance < 0) {
+                    for(Integer a :id) {
+                        ticketMapper.updateTicketState(a, 0);
+                    }
                     return ResponseVO.buildFailure("余额不足");
                 } else {
                     vipCard.setBalance(newBalance);

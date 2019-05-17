@@ -276,14 +276,21 @@ function payConfirmClick() {
 }
 
 // TODO:填空
+
 function postPayByVIP() {
     postRequest(
         "/ticket/vip/buy?ticketId="+order.ticketId+"&couponId="+order.couponId,
         null,
         function (res) {
-            $('#order-state').css("display", "none");
-            $('#success-state').css("display", "");
-            $('#buyModal').modal('hide');
+            if(res.success) {
+                $('#order-state').css("display", "none");
+                $('#success-state').css("display", "");
+                $('#buyModal').modal('hide');
+            }
+            else{
+                alert ("余额不足")
+            }
+
         },
         function (error) {
             alert(error);
