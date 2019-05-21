@@ -1,0 +1,41 @@
+.content-header{
+    display: flex;
+    justify-content: space-between;
+}
+.strategy-container{
+    display: flex;
+    width: 100%;
+    min-height: 200px;
+    margin: 20px 0;
+}
+.strategy-card {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-basis: 70%;
+    justify-content: space-around;
+
+}
+.strategy-line {
+    display: flex;
+    align-items: baseline;
+}
+
+.strategy-price{
+    flex-basis: 30%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    color: #ffffff;
+}
+
+.price-show{
+    margin: auto;
+}
+
+.strategy-operations{
+    display: flex;
+    justify-content: space-around;
+}
+

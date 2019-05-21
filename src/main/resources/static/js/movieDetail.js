@@ -160,6 +160,7 @@ $(document).ready(function(){
 
     function getMovieForm() {
         return {
+            id:movieId,
             name: $('#movie-name-input').val(),
             startDate: $('#movie-date-input').val(),
             posterUrl: $('#movie-img-input').val(),

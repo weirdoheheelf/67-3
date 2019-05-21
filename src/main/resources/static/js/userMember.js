@@ -1,53 +1,90 @@
+var isBuyState = true;
+var vipCardId;
+var isVIP;
+var cardInfo;
 $(document).ready(function () {
     getVIP();
     getCoupon();
+
+    function getVIP() {
+        getRequest(
+            '/vip/' + sessionStorage.getItem('id') + '/get',
+            function (res) {
+                if (res.success) {
+                    // 是会员
+                    isVIP=true;
+                    $("#member-card").css("visibility", "visible");
+                    $("#member-card").css("display", "");
+                    $("#nonmember-card").css("display", "none");
+
+                    vipCardId = res.content.id;
+                    $("#member-id").text(res.content.id);
+                    $("#member-description").text(res.content.description);
+                    $("#member-balance").text("¥" + res.content.balance.toFixed(2));
+                    $("#member-joinDate").text(res.content.joinDate.substring(0, 10));
+                } else {
+                    // 非会员
+                    isVIP=false;
+                    $("#member-card").css("display", "none");
+                    $("#nonmember-card").css("display", "");
+                }
+            },
+            function (error) {
+                alert(error);
+            });
+
+    }
 });
-
-var isBuyState = true;
-var vipCardId;
-
-function getVIP() {
-    getRequest(
-        '/vip/' + sessionStorage.getItem('id') + '/get',
-        function (res) {
-            if (res.success) {
-                // 是会员
-                $("#member-card").css("visibility", "visible");
-                $("#member-card").css("display", "");
-                $("#nonmember-card").css("display", "none");
-
-                vipCardId = res.content.id;
-                $("#member-id").text(res.content.id);
-                $("#member-balance").text("¥" + res.content.balance.toFixed(2));
-                $("#member-joinDate").text(res.content.joinDate.substring(0, 10));
-            } else {
-                // 非会员
-                $("#member-card").css("display", "none");
-                $("#nonmember-card").css("display", "");
-            }
-        },
-        function (error) {
-            alert(error);
-        });
-
-    getRequest(
+function showMoreCards() {
+    $('#member-card').css("display", "none");
+    $("#nonmember-card").css("display", "none");
+    $("#all-coupon").css("display", "none");
+    $("#buy-member-card").css("display", "");
+    /*getRequest(
         '/vip/getVIPInfo',
         function (res) {
             if (res.success) {
-                $("#member-buy-price").text(res.content.price);
-                $("#member-buy-description").text("充值优惠：" + res.content.description + "。永久有效");
-                $("#member-description").text(res.content.description);
+                var cards=res.content;
+                renderCards(cards);
             } else {
                 alert(res.content);
             }
-
         },
         function (error) {
             alert(error);
-        });
+        });*/
+    var cards = [{price: 20, targetMoney: 200, giftMoney: 30}, {price: 30, targetMoney: 300, giftMoney: 50}];
+    renderCards(cards);
 }
 
-function buyClick() {
+function renderCards(cards) {
+    $('.card-list').empty();
+    var cardDomStr = "";
+    cards.forEach(function (card) {
+        cardDomStr +=
+            "<div class='info'>" +
+            "    <div class='price'><b>" + card.price + "</b>元/张</div>" +
+            "    <div class='description'>充值优惠：满" + card.targetMoney + "送" + card.giftMoney + "。永久有效。</div>" +
+            "    <button onclick='buyClick(this)' data-info='"+JSON.stringify(card)+"'>立即购买</button>" +
+            "</div>";
+
+    });
+    $('#cards-list').html(cardDomStr);
+}
+
+function back() {
+    $("#buy-member-card").css("display", "none");
+    if (isVIP) {
+        $("#member-card").css("visibility", "visible");
+        $("#member-card").css("display", "");
+    } else {
+        $("#nonmember-card").css("display", "");
+    }
+    $("#all-coupon").css("display", "");
+}
+
+function buyClick(obj) {
+    cardInfo=JSON.parse($(obj).attr("data-info"));
     clearForm();
     $('#buyModal').modal('show')
     $("#userMember-amount-group").css("display", "none");
@@ -71,8 +108,9 @@ function confirmCommit() {
     if (validateForm()) {
         if ($('#userMember-cardNum').val() === "123123123" && $('#userMember-cardPwd').val() === "123123") {
             if (isBuyState) {
+
                 postRequest(
-                    '/vip/add?userId=' + sessionStorage.getItem('id'),
+                    '/vip/add?userId=' + sessionStorage.getItem('id')+'& ='+cardInfo,
                     null,
                     function (res) {
                         $('#buyModal').modal('hide');
@@ -144,7 +182,7 @@ function getCoupon() {
                         '<div class="col-md-4 right">' +
                         '<div>有效日期：</div>' +
                         '<div>' + formatDate(coupon.startTime) + ' ~ ' + formatDate(coupon.endTime) + '</div>' +
-                        '</div></div></div></div>'
+                        '</div></div></div></div>';
                 }
                 $('#coupon-list').html(couponListContent);
 
@@ -154,7 +192,6 @@ function getCoupon() {
             alert(error);
         });
 }
-
 function formatDate(date) {
     return date.substring(5, 10).replace("-", ".");
 }

@@ -30,9 +30,7 @@ public class VIPCardController {
     }
 
     @PostMapping("/charge")
-    public ResponseVO charge(@RequestBody VIPCardForm vipCardForm){
-        return vipService.charge(vipCardForm);
-    }
+    public ResponseVO charge(@RequestBody VIPCardForm vipCardForm){ return vipService.charge(vipCardForm); }
 
 
 

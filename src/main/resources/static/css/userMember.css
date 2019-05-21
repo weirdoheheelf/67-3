@@ -34,6 +34,7 @@
 }
 
 /* info为vip信息样式 */
+
 .card .info {
     display: flex;
     flex-direction: column;
@@ -78,6 +79,10 @@
     color: #fff;
     line-height: 26px;
     text-align: center
+}
+
+.info{
+    margin: 10px 0;
 }
 
 /* coupon为优惠券样式 */
