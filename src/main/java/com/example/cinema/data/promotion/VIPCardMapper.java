@@ -18,6 +18,6 @@ public interface VIPCardMapper {
 
     VIPCard selectCardByUserId(int userId);
 
-
+    int deleteCardById(int id);
 
 }

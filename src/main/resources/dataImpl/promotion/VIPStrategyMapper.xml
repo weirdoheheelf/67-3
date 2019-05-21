@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.cinema.data.promotion.VIPStrategyMapper">
+    <insert id="insertOneVIPStrategy" parameterType="com.example.cinema.po.VIPStrategy"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into vipStrategy(name,price,target_money,gift_money)
+        values(#{name},#{price},#{targetMoney},#{giftMoney})
+    </insert>
+
+    <delete id="deleteVIPStrategyById" parameterType="int">
+        delete from vipStrategy
+        where id =#{id}
+    </delete>
+
+    <update id="updateVIPStrategy" parameterType="com.example.cinema.vo.VIPStrategyForm">
+        update VIPStrategy set name = #{name}, price = #{price}, target_money = #{targetMoney}, gift_money = #{giftMoney}
+        where id = #{id}
+    </update>
+
+    <select id="selectVIPStrategies" resultMap="VIPStrategy">
+        select * from vipStrategy
+    </select>
+
+    <select id="selectVIPStrategyById" resultMap="VIPStrategy">
+        select * from vipStrategy
+        where id = #{id}
+    </select>
+
+    <resultMap id="VIPStrategy" type="com.example.cinema.po.VIPStrategy">
+        <result column="id" property="id"></result>
+        <result column="name" property="name"></result>
+        <result column="price" property="price"></result>
+        <result column="target_money" property="targetMoney"></result>
+        <result column="gift_money" property="giftMoney"></result>
+    </resultMap>
+
+</mapper>

@@ -4,9 +4,19 @@ package com.example.cinema.vo;
 import java.sql.Timestamp;
 
 public class VIPCardVO {
-    public static final double price = 25;
 
-    public static final String description="满200送30";
+    /**
+     * 目标金额
+     */
+    private double targetMoney;
+    /**
+     * 赠送金额
+     */
+    private double giftMoney;
+    /**
+     * 购买该vip卡所需金额
+     */
+    private double price;
 
     /**
      * 用户id
@@ -32,7 +42,29 @@ public class VIPCardVO {
     public VIPCardVO() {
 
     }
+    public double getTargetMoney() {
+        return targetMoney;
+    }
 
+    public void setTargetMoney(double targetMoney) {
+        this.targetMoney = targetMoney;
+    }
+
+    public double getGiftMoney() {
+        return giftMoney;
+    }
+
+    public void setGiftMoney(double giftMoney) {
+        this.giftMoney = giftMoney;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
 
     public int getUserId() {
         return userId;
@@ -67,7 +99,7 @@ public class VIPCardVO {
     }
 
     public double calculate(double amount) {
-        return (int)(amount/200)*30+amount;
+        return (int)(amount/targetMoney)*giftMoney+amount;
 
     }
 }

@@ -11,9 +11,18 @@ import java.sql.Timestamp;
 
 public class VIPCard {
 
-    public static final double price = 25;
-
-    public static final String description="满200送30";
+    /**
+     * 目标金额
+     */
+    private double targetMoney;
+    /**
+     * 赠送金额
+     */
+    private double giftMoney;
+    /**
+     * 购买该vip卡所需金额
+     */
+    private double price;
 
     /**
      * 用户id
@@ -42,6 +51,9 @@ public class VIPCard {
 
     public VIPCardVO toVO(){
         VIPCardVO vipCardVO=new VIPCardVO();
+        vipCardVO.setGiftMoney(this.giftMoney);
+        vipCardVO.setTargetMoney(this.targetMoney);
+        vipCardVO.setPrice(this.price);
         vipCardVO.setBalance(this.balance);
         vipCardVO.setId(this.id);
         vipCardVO.setJoinDate(this.joinDate);
@@ -50,6 +62,29 @@ public class VIPCard {
 
     }
 
+    public double getTargetMoney() {
+        return targetMoney;
+    }
+
+    public void setTargetMoney(double targetMoney) {
+        this.targetMoney = targetMoney;
+    }
+
+    public double getGiftMoney() {
+        return giftMoney;
+    }
+
+    public void setGiftMoney(double giftMoney) {
+        this.giftMoney = giftMoney;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
 
     public int getUserId() {
         return userId;

@@ -3,12 +3,15 @@ package com.example.cinema.blImpl.promotion;
 import com.example.cinema.bl.promotion.VIPService;
 import com.example.cinema.blImpl.sales.VIPServiceForBl;
 import com.example.cinema.data.promotion.VIPCardMapper;
-import com.example.cinema.vo.VIPCardForm;
+import com.example.cinema.data.promotion.VIPStrategyMapper;
+import com.example.cinema.po.VIPStrategy;
+import com.example.cinema.vo.*;
 import com.example.cinema.po.VIPCard;
-import com.example.cinema.vo.ResponseVO;
-import com.example.cinema.vo.VIPInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -18,15 +21,29 @@ import org.springframework.stereotype.Service;
 public class VIPServiceImpl implements VIPService, VIPServiceForBl {
     @Autowired
     VIPCardMapper vipCardMapper;
+    @Autowired
+    VIPStrategyMapper vipStrategyMapper;
 
     @Override
-    public ResponseVO addVIPCard(int userId) {
+    public ResponseVO addVIPCard(int userId,VIPInfoForm vipInfoForm) {
         VIPCard vipCard = new VIPCard();
-        vipCard.setUserId(userId);
-        vipCard.setBalance(0);
+        VIPCard usedVipCard=vipCardMapper.selectCardByUserId(userId);
+        if (usedVipCard!=null){
+            vipCard.setUserId(userId);
+            vipCard.setBalance(usedVipCard.getBalance());
+            vipCardMapper.deleteCardById(usedVipCard.getId());
+        }
+        else {
+            vipCard.setUserId(userId);
+            vipCard.setBalance(0);
+        }
+        vipCard.setTargetMoney(vipInfoForm.getTargetMoney());
+        vipCard.setGiftMoney(vipInfoForm.getGiftMoney());
+        vipCard.setPrice(vipInfoForm.getPrice());
         try {
-            int id = vipCardMapper.insertOneCard(vipCard);
-            return ResponseVO.buildSuccess(vipCardMapper.selectCardById(id));
+            vipCardMapper.insertOneCard(vipCard);
+            VIPCardVO vipCardVO=vipCard.toVO();
+            return ResponseVO.buildSuccess(vipCardVO);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseVO.buildFailure("失败");
@@ -45,10 +62,21 @@ public class VIPServiceImpl implements VIPService, VIPServiceForBl {
 
     @Override
     public ResponseVO getVIPInfo() {
-        VIPInfoVO vipInfoVO = new VIPInfoVO();
-        vipInfoVO.setDescription(VIPCard.description);
-        vipInfoVO.setPrice(VIPCard.price);
-        return ResponseVO.buildSuccess(vipInfoVO);
+        try {
+            List<VIPStrategy> vipStrategyList=vipStrategyMapper.selectVIPStrategies();
+            List<VIPInfoVO> vipInfoVOList=new ArrayList<>();
+            for (VIPStrategy vipStrategy:vipStrategyList){
+                VIPInfoVO vipInfoVO=new VIPInfoVO();
+                vipInfoVO.setPrice(vipStrategy.getPrice());
+                vipInfoVO.setTargetMoney(vipStrategy.getTargetMoney());
+                vipInfoVO.setGiftMoney(vipStrategy.getGiftMoney());
+                vipInfoVOList.add(vipInfoVO);
+            }
+            return ResponseVO.buildSuccess(vipInfoVOList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseVO.buildFailure("失败");
+        }
     }
 
     @Override
@@ -91,6 +119,29 @@ public class VIPServiceImpl implements VIPService, VIPServiceForBl {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    @Override
+    public ResponseVO getValueCard(){
+        try {
+            List<VIPStrategy> vipStrategyList=vipStrategyMapper.selectVIPStrategies();
+            double discount=0;
+            VIPStrategy valueVipStrategy=new VIPStrategy();
+            for (VIPStrategy vipStrategy:vipStrategyList){
+                double price=vipStrategy.getPrice();
+                double targetMoney=vipStrategy.getTargetMoney();
+                double giftMoney=vipStrategy.getGiftMoney();
+                double n=giftMoney/(targetMoney+price);
+                if (n>=discount){
+                    discount=n;
+                    valueVipStrategy=vipStrategy;
+                }
+            }
+            return ResponseVO.buildSuccess(valueVipStrategy);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseVO.buildFailure("失败");
         }
     }
 

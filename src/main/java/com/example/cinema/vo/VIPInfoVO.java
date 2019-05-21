@@ -7,16 +7,33 @@ package com.example.cinema.vo;
  */
 public class VIPInfoVO {
 
-    String description;
+    /**
+     * 目标金额
+     */
+    private double targetMoney;
+    /**
+     * 赠送金额
+     */
+    private double giftMoney;
+    /**
+     * 购买该vip卡所需金额
+     */
+    private double price;
 
-    double price;
-
-    public String getDescription() {
-        return description;
+    public double getTargetMoney() {
+        return targetMoney;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setTargetMoney(double targetMoney) {
+        this.targetMoney = targetMoney;
+    }
+
+    public double getGiftMoney() {
+        return giftMoney;
+    }
+
+    public void setGiftMoney(double giftMoney) {
+        this.giftMoney = giftMoney;
     }
 
     public double getPrice() {
